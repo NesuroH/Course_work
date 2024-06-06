@@ -45,6 +45,18 @@ def format_currency(amount, currency_code):
     else:
         return f"{amount} {currency_code}"
 
+
+def find_card_name(info):
+    card_name = ""
+    for symbol in info:
+        if symbol.isalpha():
+            card_name += symbol
+        elif symbol.isspace():
+            card_name += symbol
+        else:
+            continue
+    return card_name
+
 def format_and_print_operations(operations):
     for op in operations:
         # Преобразование даты в нужный формат
@@ -53,19 +65,19 @@ def format_and_print_operations(operations):
 
         if 'from' in op:
             if is_bill(op['from']) and is_bill(op['to']):
-                print(f"{mask_account_number(op['from'])} -> {mask_account_number(op['to'])}")
+                print(f"Счет {mask_account_number(op['from'])} -> Счет {mask_account_number(op['to'])}")
             elif is_bill(op['from']) == False and is_bill(op['to']):
-                print(f"{mask_card_number(op['from'])} -> {mask_account_number(op['to'])}")
+                print(f"{find_card_name(op['from'])}{mask_card_number(op['from'])} -> Счет {mask_account_number(op['to'])}")
             elif is_bill(op['from']) and is_bill(op['to']) == False:
-                print(f"{mask_account_number(op['from'])} -> {mask_card_number(op['to'])}")
+                print(f"Счет {mask_account_number(op['from'])} -> {find_card_name(op['to'])}{mask_card_number(op['to'])}")
             else:
-                print(f"{mask_card_number(op['from'])} -> {mask_card_number(op['to'])}")
+                print(f"{find_card_name(op['from'])}{mask_card_number(op['from'])} -> {find_card_name(op['to'])}{mask_card_number(op['to'])}")
         else:
-            print(mask_account_number(op['to']))
+            print(f"Счет {mask_account_number(op['to'])}")
 
         # Форматирование суммы операции и валюты
         amount_str = format_currency(op['operationAmount']['amount'], op['operationAmount']['currency']['code'])
-        print(f"Сумма: {amount_str}")
+        print(amount_str)
         print()  # Пустая строка между операциями
 
 
